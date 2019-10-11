@@ -1,0 +1,23 @@
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  confirm-diff:
+    name: confirm diff
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: tell user that PR requires check
+        run: |
+          is_pr="$(jq -r 'if .pull_request then true else false end' < ${GITHUB_EVENT_PATH})"
+          if [[ "$is_pr" != "true" ]]; then
+            exit 0
+          fi
+          ruby -rjson -e 'event = JSON.load(open(%|${GITHUB_EVENT_PATH}|)); exit 2 unless /\baccept diff\b/ === event[:comment.to_s][:body.to_s]'
+          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
+          payload="$(echo '{"state":"success","context":"check-diff"}' | jq .)"
+          curl -sS -XPOST \
+            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "content-type: application/json" \
+            -d "${payload}" \
+            ${statuses_url}
