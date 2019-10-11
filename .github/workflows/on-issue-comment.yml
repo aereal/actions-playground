@@ -18,7 +18,7 @@ jobs:
           if [[ "$body" != "accept diff" ]]; then
             exit 0
           fi
-          statuses_url=$(jq -r .ssue.pull_request.statuses_url < ${GITHUB_EVENT_PATH})
+          statuses_url=$(jq -r .issue.pull_request.statuses_url < ${GITHUB_EVENT_PATH})
           payload="$(echo '{"state":"success","context":"check-diff"}' | jq .)"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
