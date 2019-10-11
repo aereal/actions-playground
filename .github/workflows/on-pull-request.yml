@@ -8,7 +8,7 @@ jobs:
         name: report diff
         run: |
           comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
-          comment_payload="$(echo '{}' | jq --arg body 'hi i am a robot' '.body = $body')"
+          comment_payload="$(echo '{}' | jq --arg body '@${{ github.actor }} hi i am a robot' '.body = $body')"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "content-type: application/json" \
