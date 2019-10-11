@@ -14,8 +14,11 @@ jobs:
             cat ${GITHUB_EVENT_PATH}
             exit 0
           fi
-          ruby -rjson -e 'event = JSON.load(open(%|${GITHUB_EVENT_PATH}|)); exit 2 unless /\baccept diff\b/ === event[:comment.to_s][:body.to_s]'
-          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
+          body="$(jq -r .comment.body < ${GITHUB_EVENT_PATH})"
+          if [[ "$body" != "accept diff" ]]; then
+            exit 0
+          fi
+          statuses_url=$(jq -r .ssue.pull_request.statuses_url < ${GITHUB_EVENT_PATH})
           payload="$(echo '{"state":"success","context":"check-diff"}' | jq .)"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
