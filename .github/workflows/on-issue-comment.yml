@@ -9,7 +9,7 @@ jobs:
       -
         name: tell user that PR requires check
         run: |
-          is_pr="$(jq -r 'if .pull_request then true else false end' < ${GITHUB_EVENT_PATH})"
+          is_pr="$(jq -r 'if .issue.pull_request then true else false end' < ${GITHUB_EVENT_PATH})"
           if [[ "$is_pr" != "true" ]]; then
             cat ${GITHUB_EVENT_PATH}
             exit 0
