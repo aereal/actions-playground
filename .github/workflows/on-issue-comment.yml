@@ -9,16 +9,20 @@ jobs:
       -
         name: tell user that PR requires check
         run: |
+          cat ${GITHUB_EVENT_PATH}
           is_pr="$(jq -r 'if .issue.pull_request then true else false end' < ${GITHUB_EVENT_PATH})"
           if [[ "$is_pr" != "true" ]]; then
-            cat ${GITHUB_EVENT_PATH}
             exit 0
           fi
           body="$(jq -r .comment.body < ${GITHUB_EVENT_PATH})"
           if [[ "$body" != "accept diff" ]]; then
             exit 0
           fi
-          statuses_url=$(jq -r .issue.pull_request.statuses_url < ${GITHUB_EVENT_PATH})
+          pr_url=$(jq -r .issue.pull_request.url < ${GITHUB_EVENT_PATH})
+          statuses_url="$(curl -sS \
+            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            ${pr_url} | \
+            jq -r .statuses_url)"
           payload="$(echo '{"state":"success","context":"check-diff"}' | jq .)"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
