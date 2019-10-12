@@ -26,14 +26,6 @@ jobs:
             exit 1
           fi
 
-          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
-          status_payload="$(echo '{"state":"failure","context":"cdk/snapshot"}' | jq .)"
-          curl -sS -XPOST \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "content-type: application/json" \
-            -d "${status_payload}" \
-            ${statuses_url}
-
           body="@${GITHUB_ACTOR} your latest change introduced snapshot change. please confirm diff.\n<details><summary>result</summary>"
           message="$(jq -r '.testResults[].message' < results.json)"
           pre_marker='```'
@@ -45,3 +37,5 @@ jobs:
             -H "content-type: application/json" \
             -d "${comment_payload}" \
             ${comments_url}
+
+          exit 1
