@@ -494,6 +494,24 @@ Array [
         "Type": "AWS::RDS::DBInstance",
         "UpdateReplacePolicy": "Retain",
       },
+      "ClusterInstance38D61EAC7": Object {
+        "DeletionPolicy": "Retain",
+        "Properties": Object {
+          "DBClusterIdentifier": Object {
+            "Ref": "ClusterEB0386A7",
+          },
+          "DBInstanceClass": "db.t3.micro",
+          "DBParameterGroupName": Object {
+            "Ref": "CustomParameterGroup7493FD67",
+          },
+          "DBSubnetGroupName": Object {
+            "Ref": "ClusterSubnetsDCFA5CB7",
+          },
+          "Engine": "aurora-mysql",
+        },
+        "Type": "AWS::RDS::DBInstance",
+        "UpdateReplacePolicy": "Retain",
+      },
       "ClusterSecret6368BD0F": Object {
         "Properties": Object {
           "GenerateSecretString": Object {

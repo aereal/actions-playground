@@ -13,9 +13,10 @@ jobs:
       -
         run: yarn install --frozen-lockfile
       -
-        run: yarn ci || true
+        run: yarn ci
       -
         name: check snapshot test results
+        if: failure()
         run: |
           failed_tests="$(jq '.numFailedTests' < results.json)"
           if [[ $failed_tests = 0 ]]; then
@@ -26,18 +27,17 @@ jobs:
             exit 1
           fi
 
-          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
-          status_payload="$(echo '{"state":"failure","context":"cdk/snapshot"}' | jq .)"
-          curl -sS -XPOST \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "content-type: application/json" \
-            -d "${status_payload}" \
-            ${statuses_url}
-
+          body="@${GITHUB_ACTOR} your latest change introduced snapshot change. please confirm diff.\n<details><summary>result</summary>"
+          message="$(jq -r '.testResults[].message' < results.json)"
+          pre_marker='```'
+          body="${body}\n${pre_marker}\n${message}\n${pre_marker}\n</details>"
+          comment_payload="$(echo $body | jq --raw-input --slurp '{body: .}')"
           comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
-          comment_payload="$(echo '{}' | jq --arg body '@${{ github.actor }} your latest change introduced snapshot change. please confirm diff.' '.body = $body')"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "content-type: application/json" \
             -d "${comment_payload}" \
             ${comments_url}
+          echo ${comment_payload}
+
+          exit 1
