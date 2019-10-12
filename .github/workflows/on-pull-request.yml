@@ -5,22 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: tell user that PR requires check
-        run: |
-          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
-          payload="$(echo '{"state":"failure","context":"check-diff"}' | jq .)"
-          curl -sS -XPOST \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "content-type: application/json" \
-            -d "${payload}" \
-            ${statuses_url}
+        uses: actions/checkout
       -
-        name: report diff
-        run: |
-          comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
-          comment_payload="$(echo '{}' | jq --arg body '@${{ github.actor }} hi i am a robot' '.body = $body')"
-          curl -sS -XPOST \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "content-type: application/json" \
-            -d "${comment_payload}" \
-            ${comments_url}
+        uses: actions/setup-node
+        with:
+          node-version: '12.x'
+      -
+        run: yarn install --frozen-lockfile
+      -
+        run: yarn test
