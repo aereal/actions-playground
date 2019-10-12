@@ -37,5 +37,6 @@ jobs:
             -H "content-type: application/json" \
             -d "${comment_payload}" \
             ${comments_url}
+          echo ${comment_payload}
 
           exit 1
