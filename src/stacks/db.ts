@@ -43,7 +43,7 @@ export class DBStack extends Stack {
 
     new DatabaseCluster(this, "Cluster", {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instances: 2,
+      instances: 3,
       instanceProps: {
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
         parameterGroup,
