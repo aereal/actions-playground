@@ -13,9 +13,10 @@ jobs:
       -
         run: yarn install --frozen-lockfile
       -
-        run: yarn ci || true
+        run: yarn ci
       -
         name: check snapshot test results
+        if: failure()
         run: |
           failed_tests="$(jq '.numFailedTests' < results.json)"
           if [[ $failed_tests = 0 ]]; then
