@@ -38,9 +38,8 @@ jobs:
           message="$(jq -r '.testResults[].message' < results.json)"
           pre_marker='```'
           body="${body}\n${pre_marker}\n${message}\n${pre_marker}\n</details>"
-          body="$(echo -n $body | jq --raw-input --slurp .)"
+          comment_payload="$(echo $body | jq --raw-input --slurp '{body: .}')"
           comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
-          comment_payload="$(echo '{}' | jq --arg body "$body" '.body = $body')"
           curl -sS -XPOST \
             -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "content-type: application/json" \
