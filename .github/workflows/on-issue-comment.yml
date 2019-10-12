@@ -45,6 +45,7 @@ jobs:
           export GIT_AUTHOR_NAME="${GIT_COMMITTER_NAME}"
           export GIT_AUTHOR_EMAIL="${GIT_COMMITTER_EMAIL}"
           git commit -m 'update snapshot'
-          clone_url="$(cat ${GITHUB_EVENT_PATH} | jq -r .repo.clone_url | sed -e 's!//github.com!//${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com!')"
+          clone_url="$(cat ${GITHUB_EVENT_PATH} | jq -r .repository.clone_url | sed -e 's!//github.com!//${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com!')"
+          echo "set origin url = ${clone_url}"
           git remote set-url origin "${clone_url}"
           git push origin ${{ steps.determine_pr_ref.outputs.pr_head_ref }}
