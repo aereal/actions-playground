@@ -5,5 +5,9 @@
   "repository": "git@github.com:aereal/actions-playground.git",
   "author": "aereal <aereal@aereal.org>",
   "license": "Unlicense",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  }
 }
