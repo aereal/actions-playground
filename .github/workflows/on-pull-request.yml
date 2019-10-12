@@ -13,4 +13,31 @@ jobs:
       -
         run: yarn install --frozen-lockfile
       -
-        run: yarn test
+        run: yarn ci || true
+      -
+        name: check snapshot test results
+        run: |
+          failed_tests="$(jq '.numFailedTests' < results.json)"
+          if [[ $failed_tests = 0 ]]; then
+            exit 0
+          fi
+          unmatched_snapshots="$(jq '.snapshot.unmatched' < results.json)"
+          if [[ $unmatched_snapshots = 0 ]]; then
+            exit 1
+          fi
+
+          statuses_url=$(jq -r .pull_request.statuses_url < ${GITHUB_EVENT_PATH})
+          status_payload="$(echo '{"state":"failure","context":"cdk/snapshot"}' | jq .)"
+          curl -sS -XPOST \
+            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "content-type: application/json" \
+            -d "${status_payload}" \
+            ${statuses_url}
+
+          comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
+          comment_payload="$(echo '{}' | jq --arg body '@${{ github.actor }} your latest change introduced snapshot change. please confirm diff.' '.body = $body')"
+          curl -sS -XPOST \
+            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "content-type: application/json" \
+            -d "${comment_payload}" \
+            ${comments_url}

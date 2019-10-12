@@ -7,6 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        uses: actions/checkout@v1
+      -
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      -
+        run: yarn install --frozen-lockfile
+      -
         name: tell user that PR requires check
         run: |
           cat ${GITHUB_EVENT_PATH}
@@ -18,14 +26,12 @@ jobs:
           if [[ "$body" != "accept diff" ]]; then
             exit 0
           fi
-          pr_url=$(jq -r .issue.pull_request.url < ${GITHUB_EVENT_PATH})
-          statuses_url="$(curl -sS \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            ${pr_url} | \
-            jq -r .statuses_url)"
-          payload="$(echo '{"state":"success","context":"check-diff"}' | jq .)"
-          curl -sS -XPOST \
-            -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "content-type: application/json" \
-            -d "${payload}" \
-            ${statuses_url}
+
+          yarn test -u
+          git add -u test/
+          export GIT_COMMITTER_NAME="${GITHUB_ACTOR}"
+          export GIT_COMMITTER_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
+          export GIT_AUTHOR_NAME="${GIT_COMMITTER_NAME}"
+          export GIT_AUTHOR_EMAIL="${GIT_COMMITTER_EMAIL}"
+          git commit -m 'update snapshot'
+          git push origin HEAD
