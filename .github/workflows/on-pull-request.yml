@@ -38,7 +38,7 @@ jobs:
           message="$(jq -r '.testResults[].message' < results.json)"
           pre_marker='```'
           body="${body}\n${pre_marker}\n${message}\n${pre_marker}\n</details>"
-          body="$(echo -n $body | jq --raw-input --slurp -c .)"
+          body="$(echo -n $body | jq --raw-input --slurp .)"
           comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
           comment_payload="$(echo '{}' | jq --arg body "$body" '.body = $body')"
           curl -sS -XPOST \
