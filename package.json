@@ -1,0 +1,9 @@
+{
+  "name": "actions-playground",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:aereal/actions-playground.git",
+  "author": "aereal <aereal@aereal.org>",
+  "license": "Unlicense",
+  "private": true
+}
