@@ -32,6 +32,7 @@ jobs:
       -
         name: tell user that PR requires check
         run: |
+          cat ${GITHUB_EVENT_PATH}
           body="$(jq -r .comment.body < ${GITHUB_EVENT_PATH})"
           if [[ "$body" != "accept diff" ]]; then
             exit 0
