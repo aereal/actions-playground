@@ -37,6 +37,7 @@ jobs:
           body="@${GITHUB_ACTOR} your latest change introduced snapshot change. please confirm diff.\n<details><summary>result</summary>"
           message="$(jq -r '.testResults[].message' < results.json)"
           body="${body}\n```\n${message}\n```</details>"
+          body="$(echo $body | jq --raw-input --slurp .)"
           comments_url=$(jq -r .pull_request.comments_url < ${GITHUB_EVENT_PATH})
           comment_payload="$(echo '{}' | jq --arg body "$body" '.body = $body')"
           curl -sS -XPOST \
