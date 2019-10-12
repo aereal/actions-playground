@@ -1,0 +1,567 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App parameters 1`] = `
+Array [
+  Object {},
+  Object {},
+]
+`;
+
+exports[`App templates 1`] = `
+Array [
+  Object {
+    "Outputs": Object {
+      "ExportsOutputRefPrivateSubnet1Subnet51DDBC2FF0743ECA": Object {
+        "Export": Object {
+          "Name": "network:ExportsOutputRefPrivateSubnet1Subnet51DDBC2FF0743ECA",
+        },
+        "Value": Object {
+          "Ref": "PrivateSubnet1Subnet51DDBC2F",
+        },
+      },
+      "ExportsOutputRefPrivateSubnet2Subnet2ABB2F40C8B2A342": Object {
+        "Export": Object {
+          "Name": "network:ExportsOutputRefPrivateSubnet2Subnet2ABB2F40C8B2A342",
+        },
+        "Value": Object {
+          "Ref": "PrivateSubnet2Subnet2ABB2F40",
+        },
+      },
+      "ExportsOutputRefResource1D5D905A": Object {
+        "Export": Object {
+          "Name": "network:ExportsOutputRefResource1D5D905A",
+        },
+        "Value": Object {
+          "Ref": "Resource",
+        },
+      },
+    },
+    "Resources": Object {
+      "IGW": Object {
+        "Properties": Object {
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default",
+            },
+          ],
+        },
+        "Type": "AWS::EC2::InternetGateway",
+      },
+      "PrivateSubnet1DefaultRouteD28C2C3A": Object {
+        "Properties": Object {
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "NatGatewayId": Object {
+            "Ref": "PublicSubnet1NATGateway6366FB06",
+          },
+          "RouteTableId": Object {
+            "Ref": "PrivateSubnet1RouteTable902C0229",
+          },
+        },
+        "Type": "AWS::EC2::Route",
+      },
+      "PrivateSubnet1RouteTable902C0229": Object {
+        "Properties": Object {
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PrivateSubnet1",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::RouteTable",
+      },
+      "PrivateSubnet1RouteTableAssociationE8D35FCB": Object {
+        "Properties": Object {
+          "RouteTableId": Object {
+            "Ref": "PrivateSubnet1RouteTable902C0229",
+          },
+          "SubnetId": Object {
+            "Ref": "PrivateSubnet1Subnet51DDBC2F",
+          },
+        },
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      },
+      "PrivateSubnet1Subnet51DDBC2F": Object {
+        "Properties": Object {
+          "AvailabilityZone": Object {
+            "Fn::Select": Array [
+              0,
+              Object {
+                "Fn::GetAZs": "",
+              },
+            ],
+          },
+          "CidrBlock": "10.0.128.0/18",
+          "MapPublicIpOnLaunch": false,
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PrivateSubnet1",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Private",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Private",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::Subnet",
+      },
+      "PrivateSubnet2DefaultRoute08B65DFF": Object {
+        "Properties": Object {
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "NatGatewayId": Object {
+            "Ref": "PublicSubnet2NATGateway3ADC7CAC",
+          },
+          "RouteTableId": Object {
+            "Ref": "PrivateSubnet2RouteTableEA49866C",
+          },
+        },
+        "Type": "AWS::EC2::Route",
+      },
+      "PrivateSubnet2RouteTableAssociation239A73D7": Object {
+        "Properties": Object {
+          "RouteTableId": Object {
+            "Ref": "PrivateSubnet2RouteTableEA49866C",
+          },
+          "SubnetId": Object {
+            "Ref": "PrivateSubnet2Subnet2ABB2F40",
+          },
+        },
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      },
+      "PrivateSubnet2RouteTableEA49866C": Object {
+        "Properties": Object {
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PrivateSubnet2",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::RouteTable",
+      },
+      "PrivateSubnet2Subnet2ABB2F40": Object {
+        "Properties": Object {
+          "AvailabilityZone": Object {
+            "Fn::Select": Array [
+              1,
+              Object {
+                "Fn::GetAZs": "",
+              },
+            ],
+          },
+          "CidrBlock": "10.0.192.0/18",
+          "MapPublicIpOnLaunch": false,
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PrivateSubnet2",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Private",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Private",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::Subnet",
+      },
+      "PublicSubnet1DefaultRoute3017635C": Object {
+        "DependsOn": Array [
+          "VPCGW",
+        ],
+        "Properties": Object {
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": Object {
+            "Ref": "IGW",
+          },
+          "RouteTableId": Object {
+            "Ref": "PublicSubnet1RouteTable57E60591",
+          },
+        },
+        "Type": "AWS::EC2::Route",
+      },
+      "PublicSubnet1EIP9CEE10B5": Object {
+        "Properties": Object {
+          "Domain": "vpc",
+        },
+        "Type": "AWS::EC2::EIP",
+      },
+      "PublicSubnet1NATGateway6366FB06": Object {
+        "Properties": Object {
+          "AllocationId": Object {
+            "Fn::GetAtt": Array [
+              "PublicSubnet1EIP9CEE10B5",
+              "AllocationId",
+            ],
+          },
+          "SubnetId": Object {
+            "Ref": "PublicSubnet1Subnet03067927",
+          },
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet1",
+            },
+          ],
+        },
+        "Type": "AWS::EC2::NatGateway",
+      },
+      "PublicSubnet1RouteTable57E60591": Object {
+        "Properties": Object {
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet1",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::RouteTable",
+      },
+      "PublicSubnet1RouteTableAssociation0E73B917": Object {
+        "Properties": Object {
+          "RouteTableId": Object {
+            "Ref": "PublicSubnet1RouteTable57E60591",
+          },
+          "SubnetId": Object {
+            "Ref": "PublicSubnet1Subnet03067927",
+          },
+        },
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      },
+      "PublicSubnet1Subnet03067927": Object {
+        "Properties": Object {
+          "AvailabilityZone": Object {
+            "Fn::Select": Array [
+              0,
+              Object {
+                "Fn::GetAZs": "",
+              },
+            ],
+          },
+          "CidrBlock": "10.0.0.0/18",
+          "MapPublicIpOnLaunch": true,
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet1",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Public",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Public",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::Subnet",
+      },
+      "PublicSubnet2DefaultRoute8CDA255F": Object {
+        "DependsOn": Array [
+          "VPCGW",
+        ],
+        "Properties": Object {
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": Object {
+            "Ref": "IGW",
+          },
+          "RouteTableId": Object {
+            "Ref": "PublicSubnet2RouteTable1853D61A",
+          },
+        },
+        "Type": "AWS::EC2::Route",
+      },
+      "PublicSubnet2EIP41F47703": Object {
+        "Properties": Object {
+          "Domain": "vpc",
+        },
+        "Type": "AWS::EC2::EIP",
+      },
+      "PublicSubnet2NATGateway3ADC7CAC": Object {
+        "Properties": Object {
+          "AllocationId": Object {
+            "Fn::GetAtt": Array [
+              "PublicSubnet2EIP41F47703",
+              "AllocationId",
+            ],
+          },
+          "SubnetId": Object {
+            "Ref": "PublicSubnet2Subnet78B4B4BD",
+          },
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet2",
+            },
+          ],
+        },
+        "Type": "AWS::EC2::NatGateway",
+      },
+      "PublicSubnet2RouteTable1853D61A": Object {
+        "Properties": Object {
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet2",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::RouteTable",
+      },
+      "PublicSubnet2RouteTableAssociation1339F17B": Object {
+        "Properties": Object {
+          "RouteTableId": Object {
+            "Ref": "PublicSubnet2RouteTable1853D61A",
+          },
+          "SubnetId": Object {
+            "Ref": "PublicSubnet2Subnet78B4B4BD",
+          },
+        },
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      },
+      "PublicSubnet2Subnet78B4B4BD": Object {
+        "Properties": Object {
+          "AvailabilityZone": Object {
+            "Fn::Select": Array [
+              1,
+              Object {
+                "Fn::GetAZs": "",
+              },
+            ],
+          },
+          "CidrBlock": "10.0.64.0/18",
+          "MapPublicIpOnLaunch": true,
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default/PublicSubnet2",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Public",
+            },
+            Object {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Public",
+            },
+          ],
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::Subnet",
+      },
+      "Resource": Object {
+        "Properties": Object {
+          "CidrBlock": "10.0.0.0/16",
+          "EnableDnsHostnames": true,
+          "EnableDnsSupport": true,
+          "InstanceTenancy": "default",
+          "Tags": Array [
+            Object {
+              "Key": "Name",
+              "Value": "network/Default",
+            },
+          ],
+        },
+        "Type": "AWS::EC2::VPC",
+      },
+      "VPCGW": Object {
+        "Properties": Object {
+          "InternetGatewayId": Object {
+            "Ref": "IGW",
+          },
+          "VpcId": Object {
+            "Ref": "Resource",
+          },
+        },
+        "Type": "AWS::EC2::VPCGatewayAttachment",
+      },
+    },
+  },
+  Object {
+    "Resources": Object {
+      "ClusterEB0386A7": Object {
+        "DeletionPolicy": "Retain",
+        "Properties": Object {
+          "DBClusterParameterGroupName": Object {
+            "Ref": "CustomParameterGroup7493FD67",
+          },
+          "DBSubnetGroupName": Object {
+            "Ref": "ClusterSubnetsDCFA5CB7",
+          },
+          "Engine": "aurora-mysql",
+          "MasterUserPassword": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "{{resolve:secretsmanager:",
+                Object {
+                  "Ref": "ClusterSecret6368BD0F",
+                },
+                ":SecretString:password::}}",
+              ],
+            ],
+          },
+          "MasterUsername": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "{{resolve:secretsmanager:",
+                Object {
+                  "Ref": "ClusterSecret6368BD0F",
+                },
+                ":SecretString:username::}}",
+              ],
+            ],
+          },
+          "VpcSecurityGroupIds": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "ClusterSecurityGroup0921994B",
+                "GroupId",
+              ],
+            },
+          ],
+        },
+        "Type": "AWS::RDS::DBCluster",
+        "UpdateReplacePolicy": "Retain",
+      },
+      "ClusterInstance1448F06E4": Object {
+        "DeletionPolicy": "Retain",
+        "Properties": Object {
+          "DBClusterIdentifier": Object {
+            "Ref": "ClusterEB0386A7",
+          },
+          "DBInstanceClass": "db.t3.micro",
+          "DBParameterGroupName": Object {
+            "Ref": "CustomParameterGroup7493FD67",
+          },
+          "DBSubnetGroupName": Object {
+            "Ref": "ClusterSubnetsDCFA5CB7",
+          },
+          "Engine": "aurora-mysql",
+        },
+        "Type": "AWS::RDS::DBInstance",
+        "UpdateReplacePolicy": "Retain",
+      },
+      "ClusterInstance2C3E0561B": Object {
+        "DeletionPolicy": "Retain",
+        "Properties": Object {
+          "DBClusterIdentifier": Object {
+            "Ref": "ClusterEB0386A7",
+          },
+          "DBInstanceClass": "db.t3.micro",
+          "DBParameterGroupName": Object {
+            "Ref": "CustomParameterGroup7493FD67",
+          },
+          "DBSubnetGroupName": Object {
+            "Ref": "ClusterSubnetsDCFA5CB7",
+          },
+          "Engine": "aurora-mysql",
+        },
+        "Type": "AWS::RDS::DBInstance",
+        "UpdateReplacePolicy": "Retain",
+      },
+      "ClusterSecret6368BD0F": Object {
+        "Properties": Object {
+          "GenerateSecretString": Object {
+            "ExcludeCharacters": "\\"@/\\\\",
+            "GenerateStringKey": "password",
+            "PasswordLength": 30,
+            "SecretStringTemplate": "{\\"username\\":\\"owner\\"}",
+          },
+        },
+        "Type": "AWS::SecretsManager::Secret",
+      },
+      "ClusterSecretAttachedSecret7DCB7010": Object {
+        "Properties": Object {
+          "SecretId": Object {
+            "Ref": "ClusterSecret6368BD0F",
+          },
+          "TargetId": Object {
+            "Ref": "ClusterEB0386A7",
+          },
+          "TargetType": "AWS::RDS::DBCluster",
+        },
+        "Type": "AWS::SecretsManager::SecretTargetAttachment",
+      },
+      "ClusterSecurityGroup0921994B": Object {
+        "Properties": Object {
+          "GroupDescription": "RDS security group",
+          "SecurityGroupEgress": Array [
+            Object {
+              "CidrIp": "0.0.0.0/0",
+              "Description": "Allow all outbound traffic by default",
+              "IpProtocol": "-1",
+            },
+          ],
+          "VpcId": Object {
+            "Fn::ImportValue": "network:ExportsOutputRefResource1D5D905A",
+          },
+        },
+        "Type": "AWS::EC2::SecurityGroup",
+      },
+      "ClusterSubnetsDCFA5CB7": Object {
+        "Properties": Object {
+          "DBSubnetGroupDescription": "Subnets for Cluster database",
+          "SubnetIds": Array [
+            Object {
+              "Fn::ImportValue": "network:ExportsOutputRefPrivateSubnet1Subnet51DDBC2FF0743ECA",
+            },
+            Object {
+              "Fn::ImportValue": "network:ExportsOutputRefPrivateSubnet2Subnet2ABB2F40C8B2A342",
+            },
+          ],
+        },
+        "Type": "AWS::RDS::DBSubnetGroup",
+      },
+      "CustomParameterGroup7493FD67": Object {
+        "Properties": Object {
+          "Description": "Parameter group for aurora-mysql5.7",
+          "Family": "aurora-mysql5.7",
+          "Parameters": Object {
+            "character_set_client": "utf8mb4",
+            "character_set_connection": "utf8mb4",
+            "character_set_database": "utf8mb4",
+            "character_set_results": "utf8mb4",
+            "character_set_server": "utf8mb4",
+          },
+        },
+        "Type": "AWS::RDS::DBParameterGroup",
+      },
+    },
+  },
+]
+`;
