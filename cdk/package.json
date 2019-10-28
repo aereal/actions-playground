@@ -1,0 +1,122 @@
+{
+  "name": "cdk",
+  "version": "1.0.0",
+  "repository": "git@github.com:aereal/actions-playground.git",
+  "author": "aereal <aereal@aereal.org>",
+  "license": "Unlicense",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .ts src/**/*",
+    "test": "jest",
+    "ci": "jest --json --outputFile results.json --no-color"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:prettier/recommended",
+      "prettier/@typescript-eslint",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:import/typescript"
+    ],
+    "plugins": [
+      "@typescript-eslint",
+      "import"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "createDefaultProgram": true,
+      "project": "./tsconfig.json"
+    },
+    "rules": {
+      "no-use-before-define": "off",
+      "@typescript-eslint/no-use-before-define": [
+        "warn",
+        {
+          "functions": false,
+          "classes": false,
+          "variables": false,
+          "typedefs": false
+        }
+      ],
+      "@typescript-eslint/array-type": [
+        "warn",
+        {
+          "default": "array-simple",
+          "readonly": "array-simple"
+        }
+      ],
+      "import/no-cycle": 2,
+      "import/first": 1,
+      "import/order": 2
+    }
+  },
+  "prettier": {
+    "trailingComma": "es5"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  },
+  "dependencies": {
+    "@aws-cdk/assets": "^1.12.0",
+    "@aws-cdk/aws-cloudwatch": "^1.12.0",
+    "@aws-cdk/aws-ec2": "^1.12.0",
+    "@aws-cdk/aws-events": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-kms": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-logs": "^1.12.0",
+    "@aws-cdk/aws-rds": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/aws-s3-assets": "^1.12.0",
+    "@aws-cdk/aws-sam": "^1.12.0",
+    "@aws-cdk/aws-secretsmanager": "^1.12.0",
+    "@aws-cdk/aws-sqs": "^1.12.0",
+    "@aws-cdk/aws-ssm": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/cx-api": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0",
+    "aws-cdk": "^1.12.0",
+    "firebase-admin": "^8.6.1",
+    "firebase-functions": "^3.3.0",
+    "firebase-tools": "^7.6.1",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.12",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.1.0"
+  }
+}

@@ -13,7 +13,7 @@ jobs:
       -
         run: yarn install --frozen-lockfile
       -
-        run: yarn ci || true
+        run: yarn workspace cdk ci || true
       -
         name: check snapshot test results
         run: |

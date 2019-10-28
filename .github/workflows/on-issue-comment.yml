@@ -38,8 +38,8 @@ jobs:
             exit 0
           fi
 
-          yarn test -u
-          git add -u test/
+          yarn workspace cdk test -u
+          git add -u cdk/test/
           export GIT_COMMITTER_NAME="${GITHUB_ACTOR}"
           export GIT_COMMITTER_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
           export GIT_AUTHOR_NAME="${GIT_COMMITTER_NAME}"
