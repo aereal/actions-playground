@@ -30,7 +30,7 @@ jobs:
           echo "$GITHUB_SHA" > functions/lib/VERSION
           cat "${GITHUB_EVENT_PATH}" | jq .deployment.payload > functions/lib/payload.json
           cat functions/lib/payload.json
-          yarn firebase --project "$FIREBASE_PROJECT" --token "${{ secrets.FIREBASE_TOKEN }}" deploy
+          yarn firebase --project "${{ secrets.FIREBASE_PROJECT }}" --token "${{ secrets.FIREBASE_TOKEN }}" deploy
       -
         name: record deployment status
         if: always()
