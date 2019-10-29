@@ -35,7 +35,7 @@ jobs:
         name: record deployment status
         if: always()
         run: |
-          job_status="${{ job.status }}"
+          job_status="$(echo ${{ job.status }} | tr '[:upper:]' '[:lower:]')"
           echo job.status=${job_status}
           deployment_state='error'
           case "$job_status" in
