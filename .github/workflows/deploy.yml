@@ -8,13 +8,13 @@ jobs:
     steps:
       -
         run: |
-        statuses_url=$(jq -r .deployment.statuses_url < ${GITHUB_EVENT_PATH})
-        payload="$(echo '{}' | jq --arg state in_progress --arg description 'started deploy' '.state = $state | .description = $description')"
-        curl -sS -XPOST \
-          -d "${payload}" \
-          -H 'accept: application/vnd.github.flash-preview+json' \
-          -H 'authorization: bearer ${{ secrets.GITHUB_TOKEN }}' \
-          "${statuses_url}"
+          statuses_url="$(jq -r .deployment.statuses_url < ${GITHUB_EVENT_PATH})"
+          payload="$(echo '{}' | jq --arg state in_progress --arg description 'started deploy' '.state = $state | .description = $description')"
+          curl -sS -XPOST \
+            -d "${payload}" \
+            -H 'accept: application/vnd.github.flash-preview+json' \
+            -H 'authorization: bearer ${{ secrets.GITHUB_TOKEN }}' \
+            "${statuses_url}"
       -
         uses: actions/checkout@v1
       -
@@ -35,25 +35,25 @@ jobs:
         name: record deployment status
         if: always()
         run: |
-        job_status="${{ job.status }}"
-        echo job.status=${job_status}
-        deployment_state='error'
-        case "$job_status" in
-          success)
-          deployment_state='success'
-          ;;
-          failure)
-          deployment_state='failure'
-          ;;
-          *)
-          ;;
-        esac
-        statuses_url=$(jq -r .deployment.statuses_url < ${GITHUB_EVENT_PATH})
-        payload="$(echo '{}' | jq --arg state ${deployment_state} --arg description 'finished deploy' '.state = $state | .description = $description')"
-        curl -sS -XPOST \
-          -d "${payload}" \
-          -H 'accept: application/vnd.github.flash-preview+json' \
-          -H 'authorization: bearer ${{ secrets.GITHUB_TOKEN }}' \
-          "${statuses_url}"
+          job_status="${{ job.status }}"
+          echo job.status=${job_status}
+          deployment_state='error'
+          case "$job_status" in
+            success)
+            deployment_state='success'
+            ;;
+            failure)
+            deployment_state='failure'
+            ;;
+            *)
+            ;;
+          esac
+          statuses_url=$(jq -r .deployment.statuses_url < ${GITHUB_EVENT_PATH})
+          payload="$(echo '{}' | jq --arg state ${deployment_state} --arg description 'finished deploy' '.state = $state | .description = $description')"
+          curl -sS -XPOST \
+            -d "${payload}" \
+            -H 'accept: application/vnd.github.flash-preview+json' \
+            -H 'authorization: bearer ${{ secrets.GITHUB_TOKEN }}' \
+            "${statuses_url}"
 
 
