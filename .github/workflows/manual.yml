@@ -1,0 +1,14 @@
+---
+name: manual
+on:
+  workflow_dispatch:
+jobs:
+  secret-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: secret check
+        run: |
+          if [[ "${{ secrets.CLI_SECRET }}" != "expected-value" ]]; then
+            echo '! Secret mismatch'
+            exit 1
+          fi
