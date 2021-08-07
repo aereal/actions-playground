@@ -1,6 +1,22 @@
 name: test
 on: [pull_request]
 jobs:
+  deploy-staging:
+    name: deploy to staging
+    runs-on: ubuntu-latest
+    needs:
+      - check-diff
+    environment: staging
+    steps:
+      - run: echo "Deploy PR#${{ github.event.pull_request.number }}"
+  deploy-production:
+    name: deploy to staging
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-staging
+    environment: production
+    steps:
+      - run: echo "Deploy PR#${{ github.event.pull_request.number }}"
   check-diff:
     runs-on: ubuntu-latest
     steps:
