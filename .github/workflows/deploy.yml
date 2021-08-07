@@ -4,6 +4,7 @@ name: deploy
 on: deployment
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     steps:
       -
