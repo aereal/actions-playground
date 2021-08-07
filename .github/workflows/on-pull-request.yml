@@ -10,7 +10,7 @@ jobs:
     steps:
       - run: echo "Deploy PR#${{ github.event.pull_request.number }}"
   deploy-production:
-    name: deploy to staging
+    name: deploy to production
     runs-on: ubuntu-latest
     needs:
       - deploy-staging
