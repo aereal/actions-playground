@@ -1,0 +1,16 @@
+---
+
+on:
+  deployment:
+  deployment_status:
+  workflow_run:
+    types:
+      - requested
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'event_name=${{ github.event_name }} action=${{ github.event.action }}'
+      - run: |
+          cat '${{ github.event_path }}' | jq .
