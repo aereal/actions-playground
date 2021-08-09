@@ -17,6 +17,14 @@ jobs:
     environment: production
     steps:
       - run: echo "Deploy PR#${{ github.event.pull_request.number }}"
+  rollback-staging:
+    name: rollback staging
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-staging
+    environment: staging
+    steps:
+      - run: echo "Rollback PR#${{ github.event.pull_request.number }}"
   check-diff:
     runs-on: ubuntu-latest
     steps:
