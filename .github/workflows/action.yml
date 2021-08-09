@@ -4,6 +4,8 @@ on:
   deployment:
   deployment_status:
   workflow_run:
+    workflows:
+      - test
     types:
       - requested
 jobs:
