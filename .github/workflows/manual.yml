@@ -15,7 +15,7 @@ jobs:
           aws-region: ap-northeast-1
           role-duration-seconds: 900
       - id: authen
-        uses: aereal/authen-amazon-ecr/action@test-action
+        uses: aereal/authen-amazon-ecr/action@run-directly
       - run: |
           echo "server=$_SERVER"
         env:
