@@ -17,9 +17,9 @@ jobs:
       - id: authen
         uses: aereal/authen-amazon-ecr/action@run-directly
       - run: |
-          echo "server=$_SERVER"
+          echo "user=$_USER"
         env:
-          _SERVER: ${{ steps.authen.outputs.server }}
+          _SERVER: ${{ steps.authen.outputs.username }}
   secret-test:
     runs-on: ubuntu-latest
     steps:
