@@ -3,6 +3,23 @@ name: manual
 on:
   workflow_dispatch:
 jobs:
+  ecr:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          role-to-assume: arn:aws:iam::857490178337:role/github-actions
+          aws-region: ap-northeast-1
+          role-duration-seconds: 900
+      - id: authen
+        uses: aereal/authen-amazon-ecr/action@test-action
+      - run: |
+          echo "server=$_SERVER"
+        env:
+          _SERVER: ${{ steps.authen.outputs.server }}
   secret-test:
     runs-on: ubuntu-latest
     steps:
