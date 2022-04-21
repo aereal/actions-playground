@@ -15,11 +15,13 @@ jobs:
           aws-region: ap-northeast-1
           role-duration-seconds: 900
       - id: authen
-        uses: aereal/authen-amazon-ecr/action@run-directly
+        uses: aereal/authen-amazon-ecr/action@ci-test
       - run: |
-          echo "user=$_USER"
+          echo "server=${_SERVER}"
+          echo "user=${_USER}"
         env:
-          _SERVER: ${{ steps.authen.outputs.username }}
+          _SERVER: ${{ steps.authen.outputs.server }}
+          _USER: ${{ steps.authen.outputs.username }}
   secret-test:
     runs-on: ubuntu-latest
     steps:
