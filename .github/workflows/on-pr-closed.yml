@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - env:
-          base_ref: ${{ github.base_ref }}
-          head_ref: ${{ github.head_ref }}
-        run: |
-          echo "base_ref=${base_ref}"
-          echo "head_ref=${head_ref}"
+      - run: |
+          git push --delete origin $_head
+        env:
+          _head: ${{ github.head_ref }}
