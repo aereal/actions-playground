@@ -1,0 +1,34 @@
+---
+
+name: 'Setup tfcmt'
+inputs:
+  version:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: restore cache
+      id: use-cache
+      uses: actions/cache@v3.0.2
+      with:
+        path: /opt/tfcmt
+        key: tfcmt-${{ inputs.version }}
+        restore-keys: |
+          tfcmt-
+          tfcmt-${{ inputs.version }}
+    - name: install
+      if: ${{ ! steps.use-cache.outputs.cache-hit }}
+      shell: bash
+      env:
+        tag: ${{ inputs.version }}
+      run: |
+        archive_url="https://github.com/suzuki-shunsuke/tfcmt/releases/download/v${tag}/tfcmt_linux_amd64.tar.gz"
+        echo "download ${archive_url} ..."
+        curl -sfL ${archive_url} | tar xzf -
+        mkdir -p /opt/tfcmt/bin
+        cp ./tfcmt /opt/tfcmt/bin/
+    - name: setup path
+      shell: bash
+      run: |
+        echo "/opt/tfcmt/bin" >> "$GITHUB_PATH"
+
