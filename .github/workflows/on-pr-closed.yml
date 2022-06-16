@@ -35,10 +35,6 @@ jobs:
                         ... on Commit {
                           checkSuites(first: 10, filterBy: {appId: 15368}) {
                             nodes {
-                              app {
-                                databaseId
-                                slug
-                              }
                               checkRuns(first: 10, filterBy: {checkType: LATEST, status: WAITING}) {
                                 nodes {
                                   name
@@ -59,3 +55,7 @@ jobs:
             `;
             const result = await github.graphql(query, variables);
             console.log(JSON.stringify(result, null, 2));
+            const deployments = result.data.repository.pullRequest.headRef.target.checkSuites.nodes.flatMap(checkSuite =>
+              checkSuite.checkRuns.nodes.map(checkRun => checkRun.deployment)
+            );
+            console.log(JSON.stringify(deployments, null, 2));
