@@ -23,7 +23,7 @@ jobs:
           script: |
             const variables = {
               owner: context.repo.owner,
-              name: context.repo.name,
+              name: context.repo.repo,
               prNumber: context.payload.pull_request.number,
             };
             const query = `
