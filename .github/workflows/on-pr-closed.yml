@@ -55,7 +55,7 @@ jobs:
             `;
             const result = await github.graphql(query, variables);
             console.log(JSON.stringify(result, null, 2));
-            const deployments = result.data.repository.pullRequest.headRef.target.checkSuites.nodes.flatMap(checkSuite =>
+            const deployments = result.repository.pullRequest.headRef.target.checkSuites.nodes.flatMap(checkSuite =>
               checkSuite.checkRuns.nodes.map(checkRun => checkRun.deployment)
             );
             console.log(JSON.stringify(deployments, null, 2));
