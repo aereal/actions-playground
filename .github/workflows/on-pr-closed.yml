@@ -6,7 +6,7 @@ on:
     types:
       - closed
 jobs:
-  when-unmerged:
+  delete-unmerged:
     if: '!github.event.pull_request.merged'
     runs-on: ubuntu-latest
     steps:
@@ -15,3 +15,47 @@ jobs:
           git push --delete origin $_head
         env:
           _head: ${{ github.head_ref }}
+  cancel-abandoned-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const variables = {
+              owner: context.repo.owner,
+              name: context.repo.name,
+              prNumber: context.event.number,
+            };
+            const query = `
+              query ($owner: String!, $name: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $name) {
+                  pullRequest(number: $prNumber) {
+                    headRef {
+                      target {
+                        ... on Commit {
+                          checkSuites(first: 10, filterBy: {appId: 15368}) {
+                            nodes {
+                              app {
+                                databaseId
+                                slug
+                              }
+                              checkRuns(first: 10, filterBy: {checkType: LATEST, status: WAITING}) {
+                                nodes {
+                                  name
+                                  deployment {
+                                    environment
+                                    databaseId
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            const result = await github.graphql(query, variables);
+            console.log(JSON.stringify(result, null, 2));
