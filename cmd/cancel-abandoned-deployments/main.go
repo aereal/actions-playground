@@ -52,24 +52,30 @@ func run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	httpClient := buildAuthenHTTPClient(ctx)
-	workflowRuns, err := fetchAbandonedWorkflowRuns(ctx, httpClient)
+	checkSuites, err := fetchAbandonedCheckSuites(ctx, httpClient)
 	if err != nil {
 		return err
 	}
-	if len(workflowRuns) == 0 {
+	if len(checkSuites) == 0 {
 		return nil
 	}
-	fmt.Printf("%#v\n", workflowRuns)
-	var deployments []deployment
-	for _, run := range workflowRuns {
-		if run.Deployment == nil {
-			continue
-		}
-		deployments = append(deployments, *run.Deployment)
-	}
 	ghClient := github.NewClient(httpClient)
+	var deployments []deployment
+	for _, checkSuite := range checkSuites {
+		for _, run := range checkSuite.CheckRuns.Nodes {
+			if run.Deployment != nil {
+				deployments = append(deployments, *run.Deployment)
+			}
+		}
+	}
 	if err := cancelDeployments(ctx, ghClient, deployments); err != nil {
 		return err
+	}
+	pendingDeploymentReviewRequests := checkSuiteConnection(checkSuites).pendingDeploymentReviewRequests()
+	for id, reqs := range pendingDeploymentReviewRequests {
+		if err := rejectPendingDeployments(ctx, ghClient, id, reqs); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -100,7 +106,36 @@ func cancelDeployments(ctx context.Context, ghClient *github.Client, deployments
 	return merr.ErrorOrNil()
 }
 
-func fetchAbandonedWorkflowRuns(ctx context.Context, httpClient *http.Client) ([]checkRun, error) {
+type reviewPendingDeploymentsRequest struct {
+	EnvironmentIDs []int64 `json:"environment_ids"`
+	State          string  `json:"state"`
+	Comment        string  `json:"comment"`
+}
+
+type reviewPendingDeploymentsResponse []github.Deployment
+
+func rejectPendingDeployments(ctx context.Context, ghClient *github.Client, workflowRunID int64, deployReqs []deploymentRequest) error {
+	reqURL := fmt.Sprintf("repos/%s/%s/actions/runs/%d/pending_deployments", owner, repo, workflowRunID)
+	payload := reviewPendingDeploymentsRequest{
+		State:          "rejected",
+		Comment:        "corresponding Pull Request was closed; so waiting deployments are abondoned",
+		EnvironmentIDs: make([]int64, len(deployReqs)),
+	}
+	for i, deployReq := range deployReqs {
+		payload.EnvironmentIDs[i] = deployReq.Environment.ID
+	}
+	req, err := ghClient.NewRequest(http.MethodPost, reqURL, payload)
+	if err != nil {
+		return err
+	}
+	var resp reviewPendingDeploymentsResponse
+	if _, err := ghClient.Do(ctx, req, &resp); err != nil {
+		return err
+	}
+	return nil
+}
+
+func fetchAbandonedCheckSuites(ctx context.Context, httpClient *http.Client) ([]checkSuite, error) {
 	p := graphqlRequest[fetchWaitingDeploymentsQueryVariables]{
 		Query: searchDeploymentsQuery,
 		Variables: fetchWaitingDeploymentsQueryVariables{
@@ -118,11 +153,7 @@ func fetchAbandonedWorkflowRuns(ctx context.Context, httpClient *http.Client) ([
 	if err := json.NewDecoder(body).Decode(&r); err != nil {
 		return nil, err
 	}
-	var ret []checkRun
-	for _, checkSuite := range r.Data.Repository.PullRequest.HeadRef.Target.CheckSuites.Nodes {
-		ret = append(ret, checkSuite.CheckRuns.Nodes...)
-	}
-	return ret, nil
+	return r.Data.Repository.PullRequest.HeadRef.Target.CheckSuites.Nodes, nil
 }
 
 func doQuery[V any](ctx context.Context, httpClient *http.Client, payload graphqlRequest[V]) (io.ReadCloser, error) {
@@ -167,10 +198,42 @@ type deployment struct {
 	ID          int64  `json:"databaseId"`
 }
 
-type checkRun struct {
-	Name       string      `json:"name"`
-	ID         int64       `json:"databaseId"`
-	Deployment *deployment `json:"deployment"`
+type checkSuiteConnection []checkSuite
+
+func (c checkSuiteConnection) pendingDeploymentReviewRequests() map[int64][]deploymentRequest {
+	ret := map[int64][]deploymentRequest{}
+	for _, checkSuite := range c {
+		id := checkSuite.WorkflowRun.ID
+		reqs := checkSuite.WorkflowRun.PendingDeploymentRequests.Nodes
+		if len(reqs) == 0 {
+			continue
+		}
+		ret[id] = append(ret[id], reqs...)
+	}
+	return ret
+}
+
+type checkSuite struct {
+	CheckRuns struct {
+		Nodes []struct {
+			Deployment *deployment `json:"deployment"`
+		} `json:"nodes"`
+	} `json:"checkRuns"`
+	WorkflowRun struct {
+		ID                        int64                              `json:"databaseId"`
+		PendingDeploymentRequests pendingDeploymentRequestConnection `json:"pendingDeploymentRequests"`
+	} `json:"workflowRun"`
+}
+
+type deploymentRequest struct {
+	Environment *struct {
+		ID int64 `json:"databaseId"`
+	} `json:"environment"`
+}
+
+type pendingDeploymentRequestConnection struct {
+	TotalCount int64               `json:"totalCount"`
+	Nodes      []deploymentRequest `json:"nodes"`
 }
 
 type fetchWaitingDeploymentsQueryResponse struct {
@@ -179,11 +242,7 @@ type fetchWaitingDeploymentsQueryResponse struct {
 			HeadRef struct {
 				Target struct {
 					CheckSuites struct {
-						Nodes []struct {
-							CheckRuns struct {
-								Nodes []checkRun `json:"nodes"`
-							} `json:"checkRuns"`
-						} `json:"nodes"`
+						Nodes []checkSuite `json:"nodes"`
 					} `json:"checkSuites"`
 				} `json:"target"`
 			} `json:"headRef"`

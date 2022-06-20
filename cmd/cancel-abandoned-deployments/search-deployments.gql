@@ -6,10 +6,19 @@ query ($owner: String!, $name: String!, $prNumber: Int!) {
           ... on Commit {
             checkSuites(first: 10, filterBy: {appId: 15368}) {
               nodes {
-                checkRuns(first: 10, filterBy: {checkType: LATEST, status: WAITING}) {
+                workflowRun {
+                  databaseId
+                  pendingDeploymentRequests(first: 100) {
+                    totalCount
+                    nodes {
+                      environment {
+                        databaseId
+                      }
+                    }
+                  }
+                }
+                checkRuns(first: 100, filterBy: {checkType: LATEST, status: WAITING}) {
                   nodes {
-                    databaseId
-                    name
                     deployment {
                       environment
                       databaseId
