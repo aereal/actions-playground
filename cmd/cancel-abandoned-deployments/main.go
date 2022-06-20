@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -169,17 +168,11 @@ func doQuery[V any](ctx context.Context, httpClient *http.Client, payload graphq
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
+		_ = resp.Body.Close()
 		return nil, fmt.Errorf("status code is %d", resp.StatusCode)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	bodyBuf := bytes.NewBuffer(body)
-	fmt.Printf("raw body: %s\n", bodyBuf.String())
-	return io.NopCloser(bodyBuf), nil
+	return resp.Body, nil
 }
 
 type graphqlRequest[V any] struct {
