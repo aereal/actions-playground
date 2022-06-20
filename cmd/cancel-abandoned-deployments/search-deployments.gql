@@ -1,0 +1,26 @@
+query ($owner: String!, $name: String!, $prNumber: Int!) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $prNumber) {
+      headRef {
+        target {
+          ... on Commit {
+            checkSuites(first: 10, filterBy: {appId: 15368}) {
+              nodes {
+                checkRuns(first: 10, filterBy: {checkType: LATEST, status: WAITING}) {
+                  nodes {
+                    databaseId
+                    name
+                    deployment {
+                      environment
+                      databaseId
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
