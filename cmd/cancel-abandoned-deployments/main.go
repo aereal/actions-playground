@@ -145,7 +145,12 @@ func rejectPendingDeployments(ctx context.Context, ghClient *github.Client, work
 	for i, deployReq := range deployReqs {
 		payload.EnvironmentIDs[i] = deployReq.Environment.ID
 	}
-	log.Printf("POST %s %#v", reqURL, payload)
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "POST %s ", reqURL)
+	enc := json.NewEncoder(buf)
+	enc.SetIndent("", "  ")
+	_ = enc.Encode(payload)
+	log.Print(buf.String())
 	req, err := ghClient.NewRequest(http.MethodPost, reqURL, payload)
 	if err != nil {
 		return err
