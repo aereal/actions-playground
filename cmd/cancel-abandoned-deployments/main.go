@@ -75,6 +75,11 @@ func run() error {
 	pendingDeploymentReviewRequests := checkSuiteConnection(checkSuites).pendingDeploymentReviewRequests()
 	log.Printf("%d pending deployments found", len(pendingDeploymentReviewRequests))
 	for id, reqs := range pendingDeploymentReviewRequests {
+		if pendingDeployments, _ := getPendingDeployments(ctx, ghClient, id); len(deployments) > 0 {
+			for _, env := range pendingDeployments {
+				log.Printf("pending deployment environment: name=%s id=%d", env.GetName(), env.GetID())
+			}
+		}
 		buf := new(bytes.Buffer)
 		fmt.Fprintf(buf, "reject pending deployment %d: ", id)
 		var seen bool
@@ -150,6 +155,25 @@ func rejectPendingDeployments(ctx context.Context, ghClient *github.Client, work
 		return err
 	}
 	return nil
+}
+
+func getPendingDeployments(ctx context.Context, ghClient *github.Client, workflowRunID int64) ([]*github.Environment, error) {
+	reqURL := fmt.Sprintf("repos/%s/%s/actions/runs/%d/pending_deployments", owner, repo, workflowRunID)
+	req, err := ghClient.NewRequest(http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	var deployments []struct {
+		Environment *github.Environment `json:"environment"`
+	}
+	if _, err := ghClient.Do(ctx, req, &deployments); err != nil {
+		return nil, err
+	}
+	ret := make([]*github.Environment, len(deployments))
+	for i, d := range deployments {
+		ret[i] = d.Environment
+	}
+	return ret, nil
 }
 
 func fetchAbandonedCheckSuites(ctx context.Context, httpClient *http.Client) ([]checkSuite, error) {
