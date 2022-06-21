@@ -75,7 +75,18 @@ func run() error {
 	pendingDeploymentReviewRequests := checkSuiteConnection(checkSuites).pendingDeploymentReviewRequests()
 	log.Printf("%d pending deployments found", len(pendingDeploymentReviewRequests))
 	for id, reqs := range pendingDeploymentReviewRequests {
-		log.Printf("reject pending deployment %d ...", id)
+		buf := new(bytes.Buffer)
+		fmt.Fprintf(buf, "reject pending deployment %d: ", id)
+		var seen bool
+		for _, r := range reqs {
+			if seen {
+				fmt.Fprint(buf, ", ")
+			} else {
+				seen = true
+			}
+			fmt.Fprintf(buf, "environment=%d", r.Environment.ID)
+		}
+		log.Print(buf.String())
 		if err := rejectPendingDeployments(ctx, ghClient, id, reqs); err != nil {
 			return err
 		}
@@ -129,6 +140,7 @@ func rejectPendingDeployments(ctx context.Context, ghClient *github.Client, work
 	for i, deployReq := range deployReqs {
 		payload.EnvironmentIDs[i] = deployReq.Environment.ID
 	}
+	log.Printf("POST %s %#v", reqURL, payload)
 	req, err := ghClient.NewRequest(http.MethodPost, reqURL, payload)
 	if err != nil {
 		return err
