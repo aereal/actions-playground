@@ -139,7 +139,7 @@ func rejectPendingDeployments(ctx context.Context, ghClient *github.Client, work
 	reqURL := fmt.Sprintf("repos/%s/%s/actions/runs/%d/pending_deployments", owner, repo, workflowRunID)
 	payload := reviewPendingDeploymentsRequest{
 		State:          "rejected",
-		Comment:        "corresponding Pull Request was closed; so waiting deployments are abondoned",
+		Comment:        "corresponding Pull Request was closed",
 		EnvironmentIDs: make([]int64, len(deployReqs)),
 	}
 	for i, deployReq := range deployReqs {
