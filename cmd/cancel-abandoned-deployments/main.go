@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -56,6 +57,7 @@ func run() error {
 		return err
 	}
 	if len(checkSuites) == 0 {
+		log.Printf("no check suites found")
 		return nil
 	}
 	ghClient := github.NewClient(httpClient)
@@ -71,7 +73,9 @@ func run() error {
 		return err
 	}
 	pendingDeploymentReviewRequests := checkSuiteConnection(checkSuites).pendingDeploymentReviewRequests()
+	log.Printf("%d pending deployments found", len(pendingDeploymentReviewRequests))
 	for id, reqs := range pendingDeploymentReviewRequests {
+		log.Printf("reject pending deployment %d ...", id)
 		if err := rejectPendingDeployments(ctx, ghClient, id, reqs); err != nil {
 			return err
 		}
@@ -80,9 +84,11 @@ func run() error {
 }
 
 func cancelDeployments(ctx context.Context, ghClient *github.Client, deployments []deployment) error {
+	log.Printf("%d deployments to be cancelled", len(deployments))
 	sem := semaphore.NewWeighted(4)
 	group := &multierror.Group{}
 	for _, deployment := range deployments {
+		log.Printf("try to cancel deployment %d (%s)", deployment.ID, deployment.Environment)
 		if err := sem.Acquire(ctx, 1); err != nil {
 			return err
 		}
