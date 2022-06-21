@@ -16,46 +16,25 @@ jobs:
         env:
           _head: ${{ github.head_ref }}
   cancel-abandoned-deployment:
+    if: '!github.event.pull_request.merged'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          script: |
-            const variables = {
-              owner: context.repo.owner,
-              name: context.repo.name,
-              prNumber: context.event.number,
-            };
-            const query = `
-              query ($owner: String!, $name: String!, $prNumber: Int!) {
-                repository(owner: $owner, name: $name) {
-                  pullRequest(number: $prNumber) {
-                    headRef {
-                      target {
-                        ... on Commit {
-                          checkSuites(first: 10, filterBy: {appId: 15368}) {
-                            nodes {
-                              app {
-                                databaseId
-                                slug
-                              }
-                              checkRuns(first: 10, filterBy: {checkType: LATEST, status: WAITING}) {
-                                nodes {
-                                  name
-                                  deployment {
-                                    environment
-                                    databaseId
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            `;
-            const result = await github.graphql(query, variables);
-            console.log(JSON.stringify(result, null, 2));
+          go-version: '1.18.x'
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            go-${{ hashFiles('**/go.sum') }}
+            go-
+      - run: go mod download
+      - name: run script
+        run: go run ./cmd/cancel-abandoned-deployments/ -owner "$_owner" -repo "$_repo" -pr-number "$_pr_number"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          _owner: ${{ github.event.repository.owner.login }}
+          _repo: ${{ github.event.repository.name }}
+          _pr_number: ${{ github.event.number }}
