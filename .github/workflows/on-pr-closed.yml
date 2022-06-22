@@ -34,7 +34,7 @@ jobs:
       - name: run script
         run: go run ./cmd/cancel-abandoned-deployments/ -owner "$_owner" -repo "$_repo" -pr-number "$_pr_number"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           _owner: ${{ github.event.repository.owner.login }}
           _repo: ${{ github.event.repository.name }}
           _pr_number: ${{ github.event.number }}
