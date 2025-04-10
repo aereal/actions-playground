@@ -1,0 +1,25 @@
+---
+name: on check suite
+on:
+  check_run:
+    types:
+      - completed
+  check_suite:
+    types:
+      - completed
+jobs:
+  dump:
+    runs-on: ubuntu-24.04
+    env:
+      gh_event_file: ${{ github.event_path }}
+    steps:
+      -
+        name: dump check_run
+        if: ${{ github.event_name == 'check_run' }}
+        run: |
+          cat "$gh_event_file" | jq '. | pick(.check_run.conclusion, .check_run.external_id, .check_run.name, .check_run.output.annotations_url, .check_run.output.title, .check_run.output.text, .check_run.pull_requests[].url, .check_run.check_suite.app.id, .check_run.check_suite.app.name, .check_run.check_suite.conclusion, .check_run.check_suite.status, .check_run.deployment.url)'
+      -
+        name: dump check_suite
+        if: ${{ github.event_name == 'check_suite' }}
+        run: |
+          cat "$gh_event_file" | jq '. | pick(.check_suite.app.id, .check_suite.app.name, .check_suite.conclusion, .check_suite.status)'
