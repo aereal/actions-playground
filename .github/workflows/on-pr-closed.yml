@@ -10,7 +10,7 @@ jobs:
     if: '!github.event.pull_request.merged'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: |
           git push --delete origin $_head
         env:
@@ -18,7 +18,7 @@ jobs:
   cancel-abandoned-deployment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             const variables = {
