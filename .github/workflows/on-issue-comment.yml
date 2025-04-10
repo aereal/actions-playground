@@ -27,11 +27,11 @@ jobs:
             jq -r .head.ref)"
           echo "##[set-output name=pr_head_ref;]$head_ref"
       -
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1.2.0
         with:
           ref: ${{ steps.determine_pr_ref.outputs.pr_head_ref }}
       -
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
         with:
           node-version: '12.x'
       -
