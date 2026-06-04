@@ -1,13 +1,55 @@
 name: deployment
 on:
-  workflow_dispatch:
   pull_request:
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  deploy-staging:
+    name: 'Deploy ${{ matrix.env }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - staging-2
+          - staging-3
+    runs-on: ubuntu-slim
+    environment: ${{ matrix.env }}
+    concurrency:
+      group: ${{ matrix.env }}-deployment
+      cancel-in-progress: true
+    steps:
+      - run: echo "deployed $_env"
+        env:
+          _env: ${{ matrix.env }}
+  assume-staging-deployed:
+    needs:
+      - deploy-staging
+    if: always() && !cancelled() && (needs.deploy-staging.result == 'success' || needs.deploy-staging.result == 'failure')
+    runs-on: ubuntu-slim
+    permissions:
+      actions: read
+    steps:
+      - env:
+          _gh_token: ${{ github.token }}
+          _repo: ${{ github.repository }}
+          _run_id: ${{ github.run_id }}
+        run: |
+          conlusions="$(gh api repos/$_repo/actions/runs/$_run_id)/jobs --jq '.jobs[] | select(.name | contains('deploy-staging')) | .conclusion"
+
+          echo "staging jobs conclusions: $conclusions"
+
+          if echo "$conclusions" | grep -q 'success'; then
+            echo '::notice ::at least one staging deploy succeeds'
+          else
+            echo '::error title=No staging deploy succeeded::At least one staging deploy must be succeeded'
+            exit 1
+          fi
+  deploy-production:
+    name: 'Deploy production'
+    runs-on: ubuntu-slim
     environment: production
     concurrency:
       group: production-deployment
       cancel-in-progress: true
+    needs:
+      - assume-staging-deployed
     steps:
-      - run: echo OK
+      - run: echo deployed
